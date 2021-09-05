@@ -19,8 +19,10 @@ jobs:
   print_EnvVar:
     docker:
       - image: circleci/node:13.8.0
+    environment:
+          MY_ENV_VAR_3: test
     steps:
-      - run: echo $Hoda
+      - run: echo $Hoda  $MY_ENV_VAR_3
 
 workflows:
   # Name the workflow "welcome"
