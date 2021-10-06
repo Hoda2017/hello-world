@@ -14,7 +14,7 @@ commands:
         type: string
         default: "Hello World"
     steps:
-      - run: echo << parameters.for >>  
+      - run: echo << parameters.to >>  
 # Orchestrate or schedule a set of jobs
 jobs:
   print_hello:
@@ -62,7 +62,18 @@ jobs:
           - run: 
             name: on error
             command: echo "Hello Error!"
-            when: on_fail    
+            when: on_fail  
+
+  on_fail_Command:
+    docker:
+          - image: circleci/node:13.8.0
+    steps:
+          - run: return 2
+              
+          - run: 
+            name: on error
+            command: echo "Hello Error!"
+            when: on_fail               
           
 
 workflows:
@@ -71,6 +82,7 @@ workflows:
     # Run the welcome/run job in its own container
     jobs:
       - exec_Command
+      - on_fail_Command
       - welcome/run 
       - print_EnvVar
       - print_hello
