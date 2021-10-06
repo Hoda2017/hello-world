@@ -1,6 +1,69 @@
+# Use the latest 2.1 version of CircleCI pipeline process engine. See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
+# Use a package of configuration called an orb.
+orbs:
+  # Declare a dependency on the welcome-orb
+  welcome: circleci/welcome-orb@0.4.1
 
+  #commands
+commands:
+  sayhello:
+    description: "A very simple command for demonstration purposes"
+    parameters:
+      to:
+        type: string
+        default: "Hello World"
+    steps:
+      - run: echo << parameters.to >>  
+# Orchestrate or schedule a set of jobs
 jobs:
+  print_hello:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      - run: echo hello
+  print_world:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      - run: echo world
+  print_EnvVar:
+    docker:
+      - image: circleci/node:13.8.0
+    environment:
+          MY_ENV_VAR_3: test
+    steps:
+      - run: echo $Hoda  $MY_ENV_VAR_3
+
+  save_hello_world_output:
+    docker:
+    - image: circleci/node:13.8.0
+    steps:
+      - run: echo "Test Hoda" > ~/output.txt
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - output.txt
+
+  print_output_file:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run: cat ~/output.txt       
+
+  exec_Command:
+    docker:
+          - image: circleci/node:13.8.0
+    steps:
+          - sayhello:
+              to: "Hoda"
+          - run: 
+            name: on error
+            command: echo "Hello Error!"
+            when: on_fail  
+
   my_job:
     docker:
       - image: circleci/node:13.8.0
@@ -9,9 +72,24 @@ jobs:
       - run:
           name: on error
           command: echo "Hello Error!"
-          when: on_fail
+          when: on_fail              
+          
 
 workflows:
-  my_workflow:
+  # Name the workflow "welcome"
+  welcome:
+    # Run the welcome/run job in its own container
     jobs:
+      - exec_Command
       - my_job
+      - welcome/run 
+      - print_EnvVar
+      - print_hello
+      - print_world: 
+              requires:
+                - print_hello   
+      - save_hello_world_output
+      - print_output_file:
+              requires:
+               - save_hello_world_output
+
