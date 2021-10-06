@@ -14,7 +14,7 @@ commands:
         type: string
         default: "Hello World"
     steps:
-      - run: echo << parameters.to >>  
+      - run: echo << parameters.for >>  
 # Orchestrate or schedule a set of jobs
 jobs:
   print_hello:
@@ -59,6 +59,10 @@ jobs:
     steps:
           - sayhello:
               to: "Hoda"
+          - run: 
+            name: on error
+            command: echo "Hello Error!"
+            when: on_fail    
           
 
 workflows:
