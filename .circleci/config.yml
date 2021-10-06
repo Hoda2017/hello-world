@@ -60,19 +60,19 @@ jobs:
           - sayhello:
               to: "Hoda"
           - run: 
-            name: on error
-            command: echo "Hello Error!"
-            when: on_fail  
+              name: on error
+              command: echo "Hello Error!"
+              when: on_fail  
 
-  my_job:
+  on_fail_Command:
     docker:
-      - image: circleci/node:13.8.0
+          - image: circleci/node:13.8.0
     steps:
-      - run: return 1
-      - run:
-          name: on error
-          command: echo "Hello Error!"
-          when: on_fail              
+          - run: return 1
+          - run: 
+              name: on error
+              command: echo "Hello Error!"
+              when: on_fail               
           
 
 workflows:
@@ -81,7 +81,7 @@ workflows:
     # Run the welcome/run job in its own container
     jobs:
       - exec_Command
-      - my_job
+      - on_fail_Command
       - welcome/run 
       - print_EnvVar
       - print_hello
