@@ -4,6 +4,17 @@ version: 2.1
 orbs:
   # Declare a dependency on the welcome-orb
   welcome: circleci/welcome-orb@0.4.1
+
+  #commands
+commands:
+  sayhello:
+    description: "A very simple command for demonstration purposes"
+    parameters:
+      to:
+        type: string
+        default: "Hello World"
+    steps:
+      - run: echo << parameters.to >>  
 # Orchestrate or schedule a set of jobs
 jobs:
   print_hello:
@@ -40,13 +51,22 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
-      - run: cat ~/output.txt          
+      - run: cat ~/output.txt       
+
+  exec_Command:
+    docker:
+          - image: circleci/node:13.8.0
+    steps:
+          - sayhello:
+              to: "Hoda"
+          
 
 workflows:
   # Name the workflow "welcome"
   welcome:
     # Run the welcome/run job in its own container
     jobs:
+      - exec_Command
       - welcome/run 
       - print_EnvVar
       - print_hello
