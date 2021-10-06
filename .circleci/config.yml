@@ -81,7 +81,6 @@ workflows:
     # Run the welcome/run job in its own container
     jobs:
       - exec_Command
-      - on_fail_Command
       - welcome/run 
       - print_EnvVar
       - print_hello
