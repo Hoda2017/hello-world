@@ -68,11 +68,29 @@ jobs:
     docker:
           - image: circleci/node:13.8.0
     steps:
-          - run: return 1
+          - run: return 0
           - run: 
               name: on error
               command: echo "Hello Error!"
-              when: on_fail               
+              when: on_fail      
+
+  smoke_test:
+    docker:
+          - image: alpine:latest    
+    steps:
+         - run: apk add --update curl
+         - run:
+              name: smoke test
+              command: |
+                URL="https://blog.udacity.com/"
+                # Test if website exists
+                if curl -s --head ${URL} 
+                then
+                  return 0
+                else
+                  return 1
+                fi
+         - destroy_environment 
           
 
 workflows:
@@ -80,16 +98,5 @@ workflows:
   welcome:
     # Run the welcome/run job in its own container
     jobs:
-      - exec_Command
-      - on_fail_Command
-      - welcome/run 
-      - print_EnvVar
-      - print_hello
-      - print_world: 
-              requires:
-                - print_hello   
-      - save_hello_world_output
-      - print_output_file:
-              requires:
-               - save_hello_world_output
+      - smoke_test
 
